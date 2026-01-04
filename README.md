@@ -5,18 +5,6 @@ This system automates **research, outlining, content writing, SEO optimization, 
 
 ---
 
-## 🆓 FREE Setup Guide — Groq Edition
-
-## Why Groq?
-
-✅ **100% FREE** — No credit card needed  
-✅ **FASTEST** — ~10× faster than OpenAI  
-✅ **HIGH QUALITY** — Llama 3.3 70B  
-✅ **GENEROUS LIMITS** — 14,400 requests/day  
-✅ **EASY** — OpenAI-like API  
-
----
-
 ## 📁 Project Structure
 
 ```
@@ -210,16 +198,18 @@ Expected output:
 5. View AI-generated content 
 ```
 
---- 
+
+
+```
+
+---
 
 ## 📜 License (MIT)
 
-```
 MIT License
 
 Copyright (c) 2025 Smart Bandwidth Monitor
 ```
-
 
 
 
