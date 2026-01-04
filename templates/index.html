@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Content Creation Pipeline - Groq Edition</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #10a37f 0%, #1a7f64 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+        
+        .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #10a37f 0%, #1a7f64 100%);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #10a37f;
+        }
+        
+        button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #10a37f 0%, #1a7f64 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(16, 163, 127, 0.4);
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .progress-container {
+            display: none;
+            margin-top: 25px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 35px;
+            background: #e0e0e0;
+            border-radius: 18px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10a37f 0%, #1a7f64 100%);
+            width: 0%;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .progress-text {
+            margin-top: 12px;
+            text-align: center;
+            color: #666;
+            font-size: 15px;
+            font-weight: 500;
+        }
+        
+        .example-topics {
+            background: #f8faf9;
+            padding: 18px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border: 2px solid #e8f5f1;
+        }
+        
+        .example-topics h3 {
+            font-size: 14px;
+            color: #10a37f;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+        
+        .example-tag {
+            display: inline-block;
+            background: white;
+            padding: 8px 14px;
+            border-radius: 20px;
+            margin: 4px;
+            font-size: 13px;
+            color: #10a37f;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid #10a37f;
+        }
+        
+        .example-tag:hover {
+            background: #10a37f;
+            color: white;
+        }
+        
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 14px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+            font-size: 14px;
+            border: 2px solid #fcc;
+        }
+        
+        .features {
+            background: #f8faf9;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border: 2px solid #e8f5f1;
+        }
+        
+        .features h3 {
+            font-size: 15px;
+            color: #10a37f;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+        
+        .feature-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        
+        .feature-item {
+            font-size: 13px;
+            color: #555;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .feature-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🤖</div>
+            <h1>AI Content Creation Pipeline</h1>
+            <p class="subtitle">Powered by GROQ LPU Inference Engine</p>
+            <span class="badge">Multi-Agent System</span>
+        </div>
+        
+        <div class="features">
+            <h3>🎯 What This Does:</h3>
+            <div class="feature-list">
+                <div class="feature-item">✓ Research Topics</div>
+                <div class="feature-item">✓ Create Outlines</div>
+                <div class="feature-item">✓ Generate Content</div>
+                <div class="feature-item">✓ Suggest Images</div>
+                <div class="feature-item">✓ Fact-Check</div>
+                <div class="feature-item">✓ SEO Optimize</div>
+            </div>
+        </div>
+        
+        <div class="example-topics">
+            <h3>💡 Try These Topics:</h3>
+            <span class="example-tag" onclick="setTopic('The Future of Artificial Intelligence')">AI Future</span>
+            <span class="example-tag" onclick="setTopic('Climate Change Solutions 2026')">Climate Solutions</span>
+            <span class="example-tag" onclick="setTopic('Healthy Work-Life Balance Tips')">Work-Life Balance</span>
+            <span class="example-tag" onclick="setTopic('Beginner Guide to Python Programming')">Python Guide</span>
+            <span class="example-tag" onclick="setTopic('Mental Health in the Digital Age')">Mental Health</span>
+        </div>
+        
+        <form id="topicForm">
+            <div class="form-group">
+                <label for="topic">Enter Your Topic:</label>
+                <input 
+                    type="text" 
+                    id="topic" 
+                    name="topic" 
+                    placeholder="e.g., The Impact of Social Media on Society"
+                    required
+                >
+            </div>
+            
+            <button type="submit" id="submitBtn">
+                🚀 Generate Content
+            </button>
+        </form>
+        
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill">0%</div>
+            </div>
+            <div class="progress-text" id="progressText">Starting pipeline...</div>
+        </div>
+        
+        <div class="error" id="errorMessage"></div>
+    </div>
+    
+    <script>
+        const form = document.getElementById('topicForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        const errorMessage = document.getElementById('errorMessage');
+        
+        function setTopic(topic) {
+            document.getElementById('topic').value = topic;
+            document.getElementById('topic').focus();
+        }
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const topic = document.getElementById('topic').value.trim();
+            
+            if (!topic) {
+                showError('Please enter a topic to generate content');
+                return;
+            }
+            
+            // Show progress
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⚡ Generating...';
+            progressContainer.style.display = 'block';
+            errorMessage.style.display = 'none';
+            
+            // Simulate progress
+            simulateProgress();
+            
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ topic })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    progressFill.style.width = '100%';
+                    progressFill.textContent = '100%';
+                    progressText.textContent = '✨ Complete! Redirecting...';
+                    
+                    setTimeout(() => {
+                        window.location.href = `/result/${data.pipeline_id}`;
+                    }, 1000);
+                } else {
+                    showError(data.error || 'An error occurred during generation');
+                    resetForm();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Network error. Please check your connection and try again.');
+                resetForm();
+            }
+        });
+        
+        function simulateProgress() {
+            const stages = [
+                { percent: 15, text: '🔍 Researching topic...', time: 2000 },
+                { percent: 30, text: '📋 Creating outline...', time: 3000 },
+                { percent: 50, text: '✍️ Generating content...', time: 4000 },
+                { percent: 65, text: '🖼️ Finding images...', time: 2000 },
+                { percent: 80, text: '✅ Fact-checking...', time: 3000 },
+                { percent: 95, text: '🚀 Optimizing for SEO...', time: 2000 }
+            ];
+            
+            let currentStage = 0;
+            
+            function nextStage() {
+                if (currentStage < stages.length) {
+                    const stage = stages[currentStage];
+                    progressFill.style.width = stage.percent + '%';
+                    progressFill.textContent = stage.percent + '%';
+                    progressText.textContent = stage.text;
+                    currentStage++;
+                    setTimeout(nextStage, stage.time);
+                }
+            }
+            
+            nextStage();
+        }
+        
+        function showError(message) {
+            errorMessage.textContent = '❌ ' + message;
+            errorMessage.style.display = 'block';
+        }
+        
+        function resetForm() {
+            submitBtn.disabled = false;
+            submitBtn.textContent = '🚀 Generate Content';
+            progressContainer.style.display = 'none';
+            progressFill.style.width = '0%';
+        }
+    </script>
+</body>
+</html>

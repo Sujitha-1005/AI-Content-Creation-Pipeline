@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results - {{ results.topic }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #10a37f 0%, #1a7f64 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 20px;
+        }
+        
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .topic {
+            color: #10a37f;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .meta-info {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .badge {
+            background: linear-gradient(135deg, #10a37f 0%, #1a7f64 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        .actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #10a37f 0%, #1a7f64 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: transform 0.2s;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #10a37f;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .icon {
+            font-size: 24px;
+        }
+        
+        .content-text {
+            line-height: 1.8;
+            color: #444;
+            white-space: pre-wrap;
+            font-size: 15px;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 12px 24px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        
+        .tab.active {
+            background: linear-gradient(135deg, #10a37f 0%, #1a7f64 100%);
+            color: white;
+        }
+        
+        .tab:hover:not(.active) {
+            background: #e0e0e0;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .pipeline-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .step {
+            background: linear-gradient(135deg, #e8f5f1 0%, #c3e8dc 100%);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #10a37f;
+        }
+        
+        .step-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .step-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .step-status {
+            color: #10a37f;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        .success-banner {
+            background: linear-gradient(135deg, #10a37f 0%, #1a7f64 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .success-banner h2 {
+            border: none;
+            color: white;
+            padding: 0;
+            margin-bottom: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 10px;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+            
+            .header-top {
+                flex-direction: column;
+            }
+            
+            .tabs {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="success-banner">
+            <h2>✨ Content Successfully Generated!</h2>
+            <p style="color: rgba(255,255,255,0.9);">Your AI-powered content is ready</p>
+        </div>
+        
+        <div class="header">
+            <div class="header-top">
+                <div>
+                    <h1>📝 Content Results</h1>
+                    <div class="topic">{{ results.topic }}</div>
+                    <div class="meta-info">
+                        <div class="meta-item">
+                            <span>⏱️</span>
+                            <span>Generated in {{ results.get('duration', 0) }}s</span>
+                        </div>
+                        <div class="meta-item">
+                            <span>🤖</span>
+                            <span>GROQ Model</span>
+                        </div>
+                        <div class="meta-item">
+                            <span>✅</span>
+                            <span>{{ results.steps|length }} Agents</span>
+                        </div>
+                    </div>
+                </div>
+                <span class="badge">AI Generated</span>
+            </div>
+            
+            <div class="actions">
+                <a href="/" class="btn">
+                    🚀 Generate New Content
+                </a>
+                <button onclick="window.print()" class="btn btn-secondary">
+                    🖨️ Print
+                </button>
+                <button onclick="copyContent()" class="btn btn-secondary">
+                    📋 Copy All
+                </button>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2><span class="icon">📊</span> Pipeline Execution</h2>
+            <div class="pipeline-steps">
+                {% for step in results.steps %}
+                <div class="step">
+                    <div class="step-icon">
+                        {% if 'Research' in step.agent %}🔍
+                        {% elif 'Outline' in step.agent %}📋
+                        {% elif 'Content' in step.agent %}✍️
+                        {% elif 'Image' in step.agent %}🖼️
+                        {% elif 'Fact' in step.agent %}✅
+                        {% elif 'SEO' in step.agent %}🚀
+                        {% else %}🤖
+                        {% endif %}
+                    </div>
+                    <div class="step-title">{{ step.agent }}</div>
+                    <div class="step-status">✓ {{ step.status }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2><span class="icon">📝</span> Generated Content</h2>
+            <div class="tabs">
+                <button class="tab active" onclick="showTab(event, 'research')">🔍 Research</button>
+                <button class="tab" onclick="showTab(event, 'outline')">📋 Outline</button>
+                <button class="tab" onclick="showTab(event, 'content')">✍️ Content</button>
+                <button class="tab" onclick="showTab(event, 'images')">🖼️ Images</button>
+                <button class="tab" onclick="showTab(event, 'factcheck')">✅ Fact Check</button>
+                <button class="tab" onclick="showTab(event, 'seo')">🚀 SEO</button>
+            </div>
+            
+            <div id="research" class="tab-content active">
+                <h3 style="margin-bottom: 15px; color: #10a37f; font-size: 18px;">🔍 Research Data</h3>
+                <div class="content-text">{{ results.research }}</div>
+            </div>
+            
+            <div id="outline" class="tab-content">
+                <h3 style="margin-bottom: 15px; color: #10a37f; font-size: 18px;">📋 Content Outline</h3>
+                <div class="content-text">{{ results.outline }}</div>
+            </div>
+            
+            <div id="content" class="tab-content">
+                <h3 style="margin-bottom: 15px; color: #10a37f; font-size: 18px;">✍️ Generated Article</h3>
+                <div class="content-text">{{ results.content }}</div>
+            </div>
+            
+            <div id="images" class="tab-content">
+                <h3 style="margin-bottom: 15px; color: #10a37f; font-size: 18px;">🖼️ Image Suggestions</h3>
+                <div class="content-text">{{ results.images }}</div>
+            </div>
+            
+            <div id="factcheck" class="tab-content">
+                <h3 style="margin-bottom: 15px; color: #10a37f; font-size: 18px;">✅ Fact Check Report</h3>
+                <div class="content-text">{{ results.factcheck }}</div>
+            </div>
+            
+            <div id="seo" class="tab-content">
+                <h3 style="margin-bottom: 15px; color: #10a37f; font-size: 18px;">🚀 SEO Optimization</h3>
+                <div class="content-text">{{ results.seo }}</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function showTab(event, tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+        
+        function copyContent() {
+            const content = document.querySelector('.tab-content.active .content-text').textContent;
+            navigator.clipboard.writeText(content).then(() => {
+                alert('Content copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+            });
+        }
+    </script>
+</body>
+</html>
